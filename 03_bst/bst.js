@@ -1,12 +1,12 @@
-function BinarySearchTree(value) {
+function BinarySearchTree(value, count) {
   this.value = value;
   this.left = null;
   this.right = null;
-  this.count = 1;
+  if (!count) {this.count = 1};
 }
 
 BinarySearchTree.prototype.insert = function(value){
-    var newNode = new BinarySearchTree(value);
+    var newNode = new BinarySearchTree(value, "noCount");
     var currentRoot = this;
 
     while(currentRoot){
@@ -29,8 +29,8 @@ BinarySearchTree.prototype.insert = function(value){
           break;
         }
       }
-    };
-    this.count++;
+    }
+    this.count++
 };
 
 BinarySearchTree.prototype.contains = function(value){
@@ -112,4 +112,3 @@ BinarySearchTree.prototype.breadthFirstForEach = function(){};
 BinarySearchTree.prototype.size = function(){
   return this.count;
 };
-
