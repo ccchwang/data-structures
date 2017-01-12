@@ -100,15 +100,84 @@ BinarySearchTree.prototype.depthFirstForEach = function(fn, option){
   }
 
 
+  if(option === 'pre-order'){
+ //root, left right
+    var currentRoot = this, parent = [], leftIsDone = processed = false;
+
+    while (currentRoot) {
+
+      if (!processed) {
+      fn(currentRoot.value);
+      }
+
+      if (currentRoot.left && !leftIsDone){
+        parent.push(currentRoot);
+        currentRoot = currentRoot.left;
+      }
+      else {
+        leftIsDone = true;
+
+        if (currentRoot.right) {
+          currentRoot = currentRoot.right;
+          leftIsDone = false;
+          processed = false;
+        }
+        else {
+          currentRoot = parent.pop();
+          processed = true;
+        }
+
+      }
+    }
+  }
+//left, right, root
+//go all left first
+//when no more left, go back up to parent. process left
+//check if there's right. if right, that becomes new currrent node
+
+  //right becomes current node: go again
+//no right: parent becomes new node. process parent. go up to grandparent. grandparent doesn't need to go left or right anymore.
 
 
-  //if option pre-order, run in pre-order
-  //if option is post-order, run in post-order
+//pick next node - right or parent
+//if right, try going left again
+//if parent, try right. if no right, process parent. go to next parent and turn right as false;
+
+  if(option === 'post-order'){
+
+
+  }
+
 
 };
 
-BinarySearchTree.prototype.breadthFirstForEach = function(){};
+BinarySearchTree.prototype.breadthFirstForEach = function(fn, currentRoots){
+    var queue = [];
+
+    if (arguments.length === 1) {
+      currentRoots = [this]
+    }
+
+    currentRoots.forEach(function(root) {
+      fn(root.value);
+      if (root.left) {queue.push(root.left)};
+      if (root.right) {queue.push(root.right)};
+    })
+
+    if (queue.length > 0) {
+      return this.breadthFirstForEach(fn, queue)
+    }
+}
+
 
 BinarySearchTree.prototype.size = function(){
   return this.count;
 };
+
+
+
+var tree = new BinarySearchTree(10);
+var depth = [];
+tree.insert(25)
+tree.insert(30)
+tree.insert(3)
