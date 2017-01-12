@@ -1,56 +1,58 @@
-function BinarySearchTree(value) {
+function BinarySearchTree(value, count) {
   this.value = value;
   this.left = null;
   this.right = null;
-  this.count = 1;
+  if (!count) {this.count = 1};
 }
 
 BinarySearchTree.prototype.insert = function(value){
-    var newNode = new BinarySearchTree(value);
+    var newNode = new BinarySearchTree(value, "noCount");
     var currentRoot = this;
 
     while(currentRoot){
 
       if (newNode.value < currentRoot.value) {
-
         if(currentRoot.left){
           currentRoot = currentRoot.left;
-
-        } else{
-
+        }
+        else {
           currentRoot.left = newNode;
           break;
         }
-      } else {
+      }
+      else {
         if(currentRoot.right){
           currentRoot = currentRoot.right;
-        } else{
+        }
+        else {
           currentRoot.right = newNode;
           break;
         }
       }
     }
-
-    this.count++;
+    this.count++
 };
+
 BinarySearchTree.prototype.contains = function(value){
   var currentRoot = this;
+
     while(currentRoot){
 
       if(value === currentRoot.value){
         return true;
       }
-
-      if ( value < currentRoot.value) {
-
+      //if value is smaller than currentRoot
+      if (value < currentRoot.value) {
         if(currentRoot.left){
           currentRoot = currentRoot.left;
         }
         else {
           return false;
         }
-      } else {
-        if(currentRoot.right){
+      }
+      //if value is greater than currentRoot
+      else {
+        if (currentRoot.right){
           currentRoot = currentRoot.right;
         }
         else {
@@ -60,45 +62,122 @@ BinarySearchTree.prototype.contains = function(value){
     }
 
 };
+
 BinarySearchTree.prototype.depthFirstForEach = function(fn, option){
-  //if no option, run in-order
-  //if option 'in order', run in order
-  var currentRoot = this;
-  var parent;
-  var leftIsDone = false;
 
   if(!option || option === 'in-order'){
-   //left
-   //root
-   //right
-    while(currentRoot){
+  //1) go left as far as you can
+  //2) no more left, so process current node
+  //2a-2b) set new current node (right or parent), and restart loop
+    var currentRoot = this, parent = [], leftIsDone = false;
 
-      if(currentRoot.left){
-        parent = currentRoot;
+    while (currentRoot) {
+
+    //1) go left as far as it can. each time, keep adding parent to stack.
+      if (currentRoot.left && !leftIsDone){
+        parent.push(currentRoot);
         currentRoot = currentRoot.left;
       }
+
+    //2) no more left, so process node and turn on leftIsDone.
       else {
         fn(currentRoot.value);
+        leftIsDone = true;
 
+        //**After processing node, we need to set new current node. New node can be either the right or the parent**//
+
+        //2a) Right Exists: Set right as new current and set leftIsDone to false so loop can happen all over again.
         if (currentRoot.right) {
-          parent = currentRoot;
           currentRoot = currentRoot.right;
-        } else {
-          fn(currentRoot.value)
-          currentRoot = parent;
-          leftIsDone = true;
+          leftIsDone = false;
+        }
+        //2b) No Right: Set the last immediate parent (stack, LIFO) as new current.
+        else {
+          currentRoot = parent.pop();
         }
       }
-
     }
   }
 
-  //if option pre-order, run in pre-order
-  //if option is post-order, run in post-order
-  return [];
+
+  if(option === 'pre-order'){
+ //root, left right
+    var currentRoot = this, parent = [], leftIsDone = processed = false;
+
+    while (currentRoot) {
+
+      if (!processed) {
+      fn(currentRoot.value);
+      }
+
+      if (currentRoot.left && !leftIsDone){
+        parent.push(currentRoot);
+        currentRoot = currentRoot.left;
+      }
+      else {
+        leftIsDone = true;
+
+        if (currentRoot.right) {
+          currentRoot = currentRoot.right;
+          leftIsDone = false;
+          processed = false;
+        }
+        else {
+          currentRoot = parent.pop();
+          processed = true;
+        }
+
+      }
+    }
+  }
+//left, right, root
+//go all left first
+//when no more left, go back up to parent. process left
+//check if there's right. if right, that becomes new currrent node
+
+  //right becomes current node: go again
+//no right: parent becomes new node. process parent. go up to grandparent. grandparent doesn't need to go left or right anymore.
+
+
+//pick next node - right or parent
+//if right, try going left again
+//if parent, try right. if no right, process parent. go to next parent and turn right as false;
+
+  if(option === 'post-order'){
+
+
+  }
+
+
 };
-BinarySearchTree.prototype.breadthFirstForEach = function(){};
+
+BinarySearchTree.prototype.breadthFirstForEach = function(fn, currentRoots){
+    var queue = [];
+
+    if (arguments.length === 1) {
+      currentRoots = [this]
+    }
+
+    currentRoots.forEach(function(root) {
+      fn(root.value);
+      if (root.left) {queue.push(root.left)};
+      if (root.right) {queue.push(root.right)};
+    })
+
+    if (queue.length > 0) {
+      return this.breadthFirstForEach(fn, queue)
+    }
+}
+
 
 BinarySearchTree.prototype.size = function(){
   return this.count;
 };
+
+
+
+var tree = new BinarySearchTree(10);
+var depth = [];
+tree.insert(25)
+tree.insert(30)
+tree.insert(3)
