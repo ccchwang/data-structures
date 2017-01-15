@@ -30,13 +30,13 @@ BinarySearchTree.prototype.insert = function(value){
         }
       }
     }
-    this.count++
+    this.count++;
 };
 
 BinarySearchTree.prototype.contains = function(value){
   var currentRoot = this;
 
-    while(currentRoot){
+    while(currentRoot) {
 
       if(value === currentRoot.value){
         return true;
@@ -130,25 +130,41 @@ BinarySearchTree.prototype.depthFirstForEach = function(fn, option){
       }
     }
   }
-//left, right, root
-//go all left first
-//when no more left, go back up to parent. process left
-//check if there's right. if right, that becomes new currrent node
-
-  //right becomes current node: go again
-//no right: parent becomes new node. process parent. go up to grandparent. grandparent doesn't need to go left or right anymore.
-
-
-//pick next node - right or parent
-//if right, try going left again
-//if parent, try right. if no right, process parent. go to next parent and turn right as false;
 
   if(option === 'post-order'){
+    var currentRoot = this, parent = [], leftIsDone = rightIsDone = false;
 
+    //if no more left, check right
+        //if no right, process and go up. check right if rightisnotdone. if right, go down there and start again. check rightisDone.
+        //else, process, go up and check left is done/right is not done.
 
+    while (currentRoot) {
+      if (currentRoot.left && !leftIsDone) {
+        parent.push(currentRoot);
+        currentRoot = currentRoot.left;
+      }
+      else {
+        if (currentRoot.right && !rightIsDone) {
+          parent.push(currentRoot);
+          currentRoot = currentRoot.right;
+          rightIsDone = leftIsDone = false;
+        }
+        else {
+          var childVal = currentRoot.value;
+          fn(childVal);
+          currentRoot = parent.pop();
+          leftIsDone = true;
+
+          if (currentRoot && childVal > currentRoot.value) {
+            rightIsDone = true;
+          }
+          else {
+            rightIsDone = false;
+          }
+        }
+      }
+    }
   }
-
-
 };
 
 BinarySearchTree.prototype.breadthFirstForEach = function(fn, currentRoots){
@@ -169,15 +185,6 @@ BinarySearchTree.prototype.breadthFirstForEach = function(fn, currentRoots){
     }
 }
 
-
 BinarySearchTree.prototype.size = function(){
   return this.count;
 };
-
-
-
-var tree = new BinarySearchTree(10);
-var depth = [];
-tree.insert(25)
-tree.insert(30)
-tree.insert(3)
