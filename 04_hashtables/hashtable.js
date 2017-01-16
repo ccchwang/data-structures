@@ -1,7 +1,11 @@
 function HashTable(){
-  this.numBuckets = 35;
-  this.table = [];
+
+  this.table = new Array(35);
 }
+
+Object.defineProperty(HashTable.prototype, 'numBuckets', {
+  get: function(){return this.table.length}
+})
 
 HashTable.prototype.set = function(key, val){
   if (typeof key !== "string") {

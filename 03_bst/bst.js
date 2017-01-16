@@ -8,59 +8,37 @@ function BinarySearchTree(value, count) {
 BinarySearchTree.prototype.insert = function(value){
     var newNode = new BinarySearchTree(value, "noCount");
     var currentRoot = this;
+    var direction;
 
     while(currentRoot){
+      direction = value < currentRoot.value ? 'left' : 'right';
 
-      if (newNode.value < currentRoot.value) {
-        if(currentRoot.left){
-          currentRoot = currentRoot.left;
+        if(currentRoot[direction]){
+          currentRoot = currentRoot[direction];
         }
         else {
-          currentRoot.left = newNode;
+          currentRoot[direction] = newNode;
           break;
         }
-      }
-      else {
-        if(currentRoot.right){
-          currentRoot = currentRoot.right;
-        }
-        else {
-          currentRoot.right = newNode;
-          break;
-        }
-      }
+
     }
     this.count++;
 };
 
 BinarySearchTree.prototype.contains = function(value){
   var currentRoot = this;
+  var direction = value < currentRoot.value ? 'left' : 'right';
 
-    while(currentRoot) {
-
-      if(value === currentRoot.value){
-        return true;
-      }
-      //if value is smaller than currentRoot
-      if (value < currentRoot.value) {
-        if(currentRoot.left){
-          currentRoot = currentRoot.left;
-        }
-        else {
-          return false;
-        }
-      }
-      //if value is greater than currentRoot
-      else {
-        if (currentRoot.right){
-          currentRoot = currentRoot.right;
-        }
-        else {
-          return false;
-        }
-      }
+    if(value === currentRoot.value){
+      return true;
     }
-
+    //check direction and if it exists, go there
+    if(currentRoot[direction]){
+      return currentRoot[direction].contains(value);
+    }
+    else {
+      return false;
+    }
 };
 
 BinarySearchTree.prototype.depthFirstForEach = function(fn, option){
